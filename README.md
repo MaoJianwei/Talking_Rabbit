@@ -4,6 +4,6 @@
 
 My inspiration comes from Nabaztag Wifi Smart Rabbit, but there is no way to get one!
 
-Remotely controlled by **RESTful API**, Hosted by Raspberry Pi 3 now, Easily transplant to other platform :)
+Remotely controlled by **RESTful API**, Hosted by Raspberry Pi 3 now, Easily transplant to other platforms :)
 
 #### Copyright © 2017 [Jianwei Mao](http://www.maojianwei.com/). Welcome to Star, Watch, and Fork!
