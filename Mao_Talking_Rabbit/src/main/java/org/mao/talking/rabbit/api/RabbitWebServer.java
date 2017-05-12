@@ -12,6 +12,8 @@ public interface RabbitWebServer {
      */
     RabbitWebServer getRabbitWebServer();
 
+    void initWebInterface();
+
     /**
      * Start web server to receive external events.
      */
@@ -21,4 +23,6 @@ public interface RabbitWebServer {
      * Stop web server.
      */
     void stopWebInterface();
+
+    void destroyWebInterface();
 }
