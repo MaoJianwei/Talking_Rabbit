@@ -3,7 +3,8 @@ package org.mao.talking.rabbit.impl;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.mao.talking.rabbit.api.RabbitWebServer;
+import org.mao.talking.rabbit.api.RabbitServer;
+import org.mao.talking.rabbit.restful.RabbitWebApplication;
 
 import javax.ws.rs.ProcessingException;
 import java.io.IOException;
@@ -15,12 +16,11 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by mao on 17-5-12.
  */
-public class RestfulServer implements RabbitWebServer {
+public class RestfulServer implements RabbitServer {
 
     // Base URI the Grizzly HTTP server will listen on
     // example: "http://localhost:8080/myapp/"
     public static final String BASE_URI = "http://0.0.0.0:10110/";
-    public static final String RESOURCE_PACKAGE = "org.mao.talking.rabbit.restful";
 
     private volatile static RestfulServer restServer;
 
@@ -32,8 +32,8 @@ public class RestfulServer implements RabbitWebServer {
         ;
     }
 
-    @Override
-    public RabbitWebServer getRabbitWebServer() {
+
+    public static RabbitServer getRabbitServer() {
         if (restServer == null) {
             synchronized (RestfulServer.class) {
                 if (restServer == null) {
@@ -46,15 +46,13 @@ public class RestfulServer implements RabbitWebServer {
     }
 
     @Override
-    public void initWebInterface() {
+    public void initInterface() {
 
-        // create a resource config that scans for JAX-RS resources and providers
-        final ResourceConfig rc = new ResourceConfig().packages(RESOURCE_PACKAGE);
-
+        // ResourceConfig: a resource config that scans for JAX-RS resources and providers
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI
         try {
-            httpServer = GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc, false);
+            httpServer = GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), new RabbitWebApplication(), false);
         } catch (ProcessingException e) {
             // TODO - robustness
             e.printStackTrace();
@@ -62,7 +60,7 @@ public class RestfulServer implements RabbitWebServer {
     }
 
     @Override
-    public void startWebInterface() {
+    public void startInterface() {
 
         // TODO - auto retry - against httpServer's STOPPING state
 
@@ -79,7 +77,12 @@ public class RestfulServer implements RabbitWebServer {
     }
 
     @Override
-    public void stopWebInterface() {
+    public boolean isRunning(){
+        return httpServer.isStarted();
+    }
+
+    @Override
+    public void stopInterface() {
 
         if (!httpServer.isStarted()) {
             return;
@@ -102,9 +105,9 @@ public class RestfulServer implements RabbitWebServer {
     }
 
     @Override
-    public void destroyWebInterface() {
+    public void destroyInterface() {
 
-        stopWebInterface();
+        stopInterface();
 
         httpServer = null;
     }

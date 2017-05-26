@@ -1,6 +1,6 @@
 package org.mao.talking.rabbit.impl;
 
-import org.mao.talking.rabbit.api.RabbitWebServer;
+import org.mao.talking.rabbit.api.RabbitServer;
 
 /**
  * Main.
@@ -12,7 +12,9 @@ public final class MaoRabbitManager {
     private static final MaoRabbitManager rabbit = new MaoRabbitManager();
 
 
-    private RabbitWebServer webServer;
+    private RabbitServer webServer;
+
+    private long lastTime;
 
 
     public static void main (String [] args) {
@@ -20,7 +22,12 @@ public final class MaoRabbitManager {
         rabbit.rabbitRun();
 
         // TODO -
-        
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         rabbit.rabbitRest();
         rabbit.destroy();
     }
@@ -43,6 +50,13 @@ public final class MaoRabbitManager {
         // UI - show Standby view
 
         // init Web server instance
+        lastTime = System.currentTimeMillis();
+        webServer = RestfulServer.getRabbitServer();
+        System.out.println(System.currentTimeMillis()-lastTime);
+
+        lastTime = System.currentTimeMillis();
+        webServer.initInterface();
+        System.out.println(System.currentTimeMillis()-lastTime);
     }
 
     /**
@@ -59,6 +73,13 @@ public final class MaoRabbitManager {
         // UI manager starts to listen to / pull from MQ
 
         // start Web server and verify that it is working well
+        lastTime = System.currentTimeMillis();
+        webServer.startInterface();
+        System.out.println(System.currentTimeMillis()-lastTime);
+
+        lastTime = System.currentTimeMillis();
+        varifyServerRunning();
+        System.out.println(System.currentTimeMillis()-lastTime);
     }
 
     /**
@@ -73,6 +94,15 @@ public final class MaoRabbitManager {
 
 
         // stop Web server and release network resource
+        lastTime = System.currentTimeMillis();
+        webServer.stopInterface();
+        System.out.println(System.currentTimeMillis()-lastTime);
+
+        lastTime = System.currentTimeMillis();
+        varifyServerStopped();
+        System.out.println(System.currentTimeMillis()-lastTime);
+
+
 
         // UI manager stop to listen to / pull from MQ
     }
@@ -92,10 +122,49 @@ public final class MaoRabbitManager {
         // Call rabbitRest() first!
 
         // release Web server instance
+        lastTime = System.currentTimeMillis();
+        webServer.destroyInterface();
+        webServer = null;
+        System.out.println(System.currentTimeMillis()-lastTime);
+
 
         // clear and release MQ
 
         // release UI resource
         // release UI manager
+    }
+
+
+
+
+
+    private void varifyServerRunning() {
+
+        for(int i = 0; !webServer.isRunning() && i < 6; i++){
+
+            System.out.println(i);
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                System.out.println("InterruptedException, quit confirmation!");
+                break;
+            }
+        }
+    }
+
+    private void varifyServerStopped() {
+
+        for(int i = 0; webServer.isRunning() && i < 6; i++){
+
+            System.out.println(i);
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                System.out.println("InterruptedException, quit confirmation!");
+                break;
+            }
+        }
     }
 }
