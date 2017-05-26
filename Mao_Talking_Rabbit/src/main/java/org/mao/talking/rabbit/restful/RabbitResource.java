@@ -17,6 +17,7 @@ public class RabbitResource extends AbstractWebResource {
 
     @GET
     @Path("/success")
+    @Produces("application/json") // necessary !!!
     public Response successEvent() {
 
         // add to task Queue

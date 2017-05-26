@@ -1,5 +1,9 @@
 package org.mao.talking.rabbit.restful;
 
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import org.glassfish.jersey.server.ResourceConfig;
+
 import javax.ws.rs.core.Application;
 import java.util.HashSet;
 import java.util.Set;
@@ -7,51 +11,17 @@ import java.util.Set;
 /**
  * Created by mao on 17-5-12.
  */
-public class RabbitWebApplication extends Application {
+public class RabbitWebApplication extends ResourceConfig {
 
-    /**
-     * Returns the aggregate set of resources, writers and mappers combined
-     * with a default set of such web entities.
-     *
-     * @return combined set of web entities
-     */
-    @Override
-    public Set<Class<?>> getClasses() {
-        return getClasses(RabbitResource.class);
-    }
-
-    /**
-     * Returns the aggregate set of resources, writers and mappers combined
-     * with a default set of such web entities.
-     *
-     * @param classes set of resources, writers and mappers
-     * @return combined set of web entities
-     */
-    protected Set<Class<?>> getClasses(Class<?>... classes) {
-
-        // Talking Rabbit is a simple application.
-        // So maybe we should not introduce too many third-party lib dependencies?
-
-//        ImmutableSet.Builder<Class<?>> builder = ImmutableSet.builder();
-//        builder.add(ServiceNotFoundMapper.class,
-//                EntityNotFoundMapper.class,
-//                NotFoundMapper.class,
-//                ServerErrorMapper.class,
-//                BadRequestMapper.class,
-//                WebApplicationExceptionMapper.class,
-//                IllegalArgumentExceptionMapper.class,
-//                IllegalStateExceptionMapper.class,
-//                JsonBodyWriter.class);
+    public static final String RESOURCE_PACKAGE = "org.mao.talking.rabbit.restful";
 
 
-        Set<Class<?>> classSet = new HashSet<Class<?>>();
+    public RabbitWebApplication() {
 
-        // extend here - add requisite writers and mappers to the set
+        // mark where are the web resources.
+        packages(RESOURCE_PACKAGE);
 
-        for (Class c : classes) {
-            classSet.add(c);
-        }
-
-        return classSet;
+        // register Json Reader and Writer to server core.
+        register(JacksonJsonProvider.class);
     }
 }
