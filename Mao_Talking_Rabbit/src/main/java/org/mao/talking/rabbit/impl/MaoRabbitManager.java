@@ -22,14 +22,14 @@ public final class MaoRabbitManager {
         rabbit.rabbitRun();
 
         // TODO -
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(10000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
-        rabbit.rabbitRest();
-        rabbit.destroy();
+//        rabbit.rabbitRest();
+//        rabbit.destroy();
     }
 
     /**
