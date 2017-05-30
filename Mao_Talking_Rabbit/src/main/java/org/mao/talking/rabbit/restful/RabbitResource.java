@@ -24,7 +24,24 @@ public class RabbitResource extends AbstractWebResource {
 
 
     private static final String CONTENT_TYPE_JSON = "application/json";
-    
+
+    // Custom colors should be "abcdef", "123abc", "987654", etc.
+    private static final String CUSTOM_COLOR_REGEX = "([0-9,a-f]{6})";
+    private static final String COLOR_RED = "red";
+    private static final String COLOR_GREEN = "green";
+    private static final String COLOR_YELLOW = "yellow";
+    private static final String COLOR_STANDBY = "standby";
+
+    private static final String JSON_MSG_COLOR_RESP_CODE = "errcode";
+    private static final String JSON_MSG_COLOR_RESP_MSG = "errmsg";
+
+    private static final String JSON_MSG_COLOR_BACKGROUND_COLOR = "backgroundColor";
+    private static final String JSON_MSG_COLOR_WORD_COLOR = "wordColor";
+    private static final String JSON_MSG_COLOR_MESSAGE = "message";
+
+    private static final String RESPONSE_OK = "ok";
+    private static final String RESPONSE_ERROR_COLOR = "Color fields error";
+    private static final String RESPONSE_ERROR_JSON = "JSON key or value error";
 
 
     private static Queue messageQueue;
@@ -33,30 +50,60 @@ public class RabbitResource extends AbstractWebResource {
         messageQueue = queue;
     }
 
-
     @GET
     @Path("/color/{color}")
     @Produces(CONTENT_TYPE_JSON) // necessary !!!
     public Response colorEvent(@PathParam("color") String color) {
 
         if(!checkColorInput(color)){
-            return ok(buildResult(1, "ok"));
+            return ok(buildResult(1, RESPONSE_ERROR_COLOR));
         }
 
         color = calculateColor(color);
 
-        // TODO - add to task Queue
         messageQueue.offer(RabbitMessage.getRabbitMessage(color));
 
-        return ok(buildResult(0, "ok"));
+        return ok(buildResult(0, RESPONSE_OK));
     }
 
-    private ObjectNode buildResult(int code, String message){ return buildResult(code, message, null); }
+    @POST
+    @Path("/message")
+    @Produces(CONTENT_TYPE_JSON) // necessary !!!
+    @Consumes(CONTENT_TYPE_JSON) // necessary !!!
+    public Response messageColorEvent(ObjectNode rawMsgColor) {
+
+        if(!checkMessageColorInput(rawMsgColor)) {
+            return ok(buildResult(2, RESPONSE_ERROR_JSON));
+        }
+
+        String backColor = calculateColor(rawMsgColor.get(JSON_MSG_COLOR_BACKGROUND_COLOR).asText());
+        String wordColor = calculateColor(rawMsgColor.get(JSON_MSG_COLOR_WORD_COLOR).asText());
+        String message = rawMsgColor.get(JSON_MSG_COLOR_MESSAGE).asText();
+
+        messageQueue.offer(RabbitMessage.getRabbitMessage(backColor, wordColor, message));
+
+
+        return ok(buildResult(0, RESPONSE_OK));
+    }
+
+    @GET
+    @Path("clear")
+    @Produces(CONTENT_TYPE_JSON)
+    public Response clearEvent() {
+
+        messageQueue.offer(RabbitMessage.getRabbitMessage(COLOR_STANDBY));
+
+        return ok(buildResult(0, RESPONSE_OK));
+    }
+
+    private ObjectNode buildResult(int code, String message) {
+        return buildResult(code, message, null);
+    }
 
     private ObjectNode buildResult(int code, String message, Map<String, String> customFields) {
         ObjectNode data = getMapper().createObjectNode()
-                .put("errcode", code)
-                .put("errmsg", message);
+                .put(JSON_MSG_COLOR_RESP_CODE, code)
+                .put(JSON_MSG_COLOR_RESP_MSG, message);
 
         if(customFields != null) {
             customFields.forEach((k, v) -> data.put(k, v));
@@ -66,40 +113,28 @@ public class RabbitResource extends AbstractWebResource {
     }
 
     private String calculateColor(String rawColor) {
-        //TODO
-        return rawColor;
+        return rawColor.trim().toLowerCase();
     }
 
     private Boolean checkColorInput(String rawColor) {
-        //TODO
-        return true;
-    }
-
-
-    private static final String JSON_MSG_COLOR_BACKGROUND_COLOR = "backgroundColor";
-    private static final String JSON_MSG_COLOR_WORD_COLOR = "wordColor";
-    private static final String JSON_MSG_COLOR_MESSAGE = "message";
-
-
-    @POST
-    @Path("/message")
-    @Produces(CONTENT_TYPE_JSON) // necessary !!!
-    @Consumes(CONTENT_TYPE_JSON) // necessary !!!
-    public Response messageColorEvent(ObjectNode rawMsgColor) {
-
-        if(!checkMessageColorInput(rawMsgColor)) {
-            return ok(buildResult(2, "json key or value error"));
+        String trimLowerCase = rawColor.trim().toLowerCase();
+        if(trimLowerCase.equals(COLOR_RED) ||
+                trimLowerCase.equals(COLOR_GREEN) ||
+                trimLowerCase.equals(COLOR_YELLOW) ||
+                trimLowerCase.equals(COLOR_STANDBY) ||
+                isCustomColor(trimLowerCase)) {
+            return true;
         }
 
-        String backColor = calculateColor(rawMsgColor.get(JSON_MSG_COLOR_BACKGROUND_COLOR).asText());
-        String wordColor = calculateColor(rawMsgColor.get(JSON_MSG_COLOR_WORD_COLOR).asText());
-        String message = rawMsgColor.get(JSON_MSG_COLOR_MESSAGE).asText();
+        return false;
+    }
 
-        // TODO - add to task Queue
-        messageQueue.offer(RabbitMessage.getRabbitMessage(backColor, wordColor, message));
-
-
-        return ok(buildResult(0, "ok"));
+    // Custom colors should be "abcdef", "123abc", "987654", etc.
+    private boolean isCustomColor(String trimLowerCase) {
+        if(trimLowerCase.length() == 6 && trimLowerCase.matches(CUSTOM_COLOR_REGEX)) {
+            return true;
+        }
+        return false;
     }
 
     private boolean checkMessageColorInput(ObjectNode rawMsgColor) {
@@ -118,17 +153,6 @@ public class RabbitResource extends AbstractWebResource {
         }
 
         return true;
-    }
-
-    @GET
-    @Path("clear")
-    @Produces(CONTENT_TYPE_JSON)
-    public Response clearEvent() {
-
-        // TODO - add to task Queue
-        messageQueue.offer(RabbitMessage.getRabbitMessage("clear"));
-
-        return ok(buildResult(0, "ok"));
     }
 }
 
