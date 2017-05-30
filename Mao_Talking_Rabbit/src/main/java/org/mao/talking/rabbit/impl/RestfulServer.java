@@ -46,7 +46,7 @@ public class RestfulServer implements RabbitServer {
     }
 
     @Override
-    public void initInterface() {
+    public void <RabbitMessage>initInterface() {
 
         // ResourceConfig: a resource config that scans for JAX-RS resources and providers
         // create and start a new instance of grizzly http server

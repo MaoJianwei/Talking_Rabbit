@@ -2,9 +2,11 @@ package org.mao.talking.rabbit.restful;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.mao.talking.rabbit.api.AbstractWebResource;
+import org.mao.talking.rabbit.api.RabbitMessage;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.util.Queue;
 
 /**
  * Hello world!
@@ -12,6 +14,14 @@ import javax.ws.rs.core.Response;
  */
 @Path("/")
 public class RabbitResource extends AbstractWebResource {
+
+
+    private static Queue messageQueue;
+
+    public static void setMessageQueue(Queue queue) {
+        messageQueue = queue;
+    }
+
 
     @GET
     @Path("/testGet")
@@ -33,6 +43,7 @@ public class RabbitResource extends AbstractWebResource {
     public Response testPutEvent(ObjectNode body) {
 
         // add to task Queue
+
 
         ObjectNode data = getMapper().createObjectNode()
                 .put("success", 1080);
