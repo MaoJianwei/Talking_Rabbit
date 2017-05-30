@@ -2,6 +2,7 @@ package org.mao.talking.rabbit.restful;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.mao.talking.rabbit.api.AbstractWebResource;
+import org.mao.talking.rabbit.api.RabbitMessage;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -12,6 +13,7 @@ import javax.ws.rs.PathParam;
 
 import javax.ws.rs.core.Response;
 import java.util.Map;
+import java.util.Queue;
 
 /**
  * Hello world!
@@ -22,6 +24,14 @@ public class RabbitResource extends AbstractWebResource {
 
 
     private static final String CONTENT_TYPE_JSON = "application/json";
+
+
+
+    private static Queue messageQueue;
+
+    public static void setMessageQueue(Queue queue) {
+        messageQueue = queue;
+    }
 
 
     @GET

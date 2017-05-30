@@ -1,6 +1,11 @@
 package org.mao.talking.rabbit.impl;
 
+import org.mao.talking.rabbit.api.RabbitMessage;
 import org.mao.talking.rabbit.api.RabbitServer;
+import org.mao.talking.rabbit.restful.RabbitResource;
+
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Main.
@@ -13,6 +18,7 @@ public final class MaoRabbitManager {
 
 
     private RabbitServer webServer;
+    private Queue<RabbitMessage> messageQueue;
 
     private long lastTime;
 
@@ -20,6 +26,17 @@ public final class MaoRabbitManager {
     public static void main (String [] args) {
         rabbit.init();
         rabbit.rabbitRun();
+
+
+        while(true) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                //break;
+            }
+        }
+
 
         // TODO -
 //        try {
@@ -44,6 +61,7 @@ public final class MaoRabbitManager {
 
 
         // init and clear Message Queue(MQ)
+        messageQueue =  new ConcurrentLinkedQueue<RabbitMessage>();
 
         // init UI manager
         // init UI resource
@@ -57,6 +75,8 @@ public final class MaoRabbitManager {
         lastTime = System.currentTimeMillis();
         webServer.initInterface();
         System.out.println(System.currentTimeMillis()-lastTime);
+
+        RabbitResource.setMessageQueue(messageQueue);
     }
 
     /**
@@ -129,6 +149,8 @@ public final class MaoRabbitManager {
 
 
         // clear and release MQ
+        messageQueue.clear();
+        messageQueue = null;
 
         // release UI resource
         // release UI manager
