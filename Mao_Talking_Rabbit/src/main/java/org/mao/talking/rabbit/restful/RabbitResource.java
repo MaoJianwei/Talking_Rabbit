@@ -24,7 +24,7 @@ public class RabbitResource extends AbstractWebResource {
 
 
     private static final String CONTENT_TYPE_JSON = "application/json";
-
+    
 
 
     private static Queue messageQueue;
@@ -46,6 +46,7 @@ public class RabbitResource extends AbstractWebResource {
         color = calculateColor(color);
 
         // TODO - add to task Queue
+        messageQueue.offer(RabbitMessage.getRabbitMessage(color));
 
         return ok(buildResult(0, "ok"));
     }
@@ -57,17 +58,21 @@ public class RabbitResource extends AbstractWebResource {
                 .put("errcode", code)
                 .put("errmsg", message);
 
-        customFields.forEach((k, v) -> data.put(k,v));
+        if(customFields != null) {
+            customFields.forEach((k, v) -> data.put(k, v));
+        }
 
         return data;
     }
 
     private String calculateColor(String rawColor) {
-
+        //TODO
+        return rawColor;
     }
 
     private Boolean checkColorInput(String rawColor) {
-
+        //TODO
+        return true;
     }
 
 
@@ -91,6 +96,8 @@ public class RabbitResource extends AbstractWebResource {
         String message = rawMsgColor.get(JSON_MSG_COLOR_MESSAGE).asText();
 
         // TODO - add to task Queue
+        messageQueue.offer(RabbitMessage.getRabbitMessage(backColor, wordColor, message));
+
 
         return ok(buildResult(0, "ok"));
     }
@@ -115,10 +122,11 @@ public class RabbitResource extends AbstractWebResource {
 
     @GET
     @Path("clear")
-    @Consumes(CONTENT_TYPE_JSON)
+    @Produces(CONTENT_TYPE_JSON)
     public Response clearEvent() {
 
         // TODO - add to task Queue
+        messageQueue.offer(RabbitMessage.getRabbitMessage("clear"));
 
         return ok(buildResult(0, "ok"));
     }
