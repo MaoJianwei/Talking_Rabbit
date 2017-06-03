@@ -1,5 +1,6 @@
 package org.mao.talking.rabbit.impl;
 
+import org.mao.talking.rabbit.api.RabbitMessage;
 import org.mao.talking.rabbit.api.RabbitUI;
 
 import java.awt.*;
@@ -21,16 +22,19 @@ public class RabbitAwtUI implements RabbitUI {
 
 
 
+    private static Queue<RabbitMessage> messageQueue;
+
+    private EventToUi getToShow;
+
+    private Frame background;
+    private Label message;
+
+
 
     private volatile static RabbitUI awtUi;
 
     private RabbitAwtUI() {
         ;
-    }
-
-    private static Queue messageQueue;
-
-    public static void setMessageQueue(Queue queue) {
     }
 
     public static RabbitUI getRabbitUI() {
@@ -45,9 +49,10 @@ public class RabbitAwtUI implements RabbitUI {
         return awtUi;
     }
 
+    public static void setMessageQueue(Queue queue) {
+        messageQueue = queue;
+    }
 
-    private Frame background;
-    private Label message;
 
 
     @Override
@@ -94,6 +99,36 @@ public class RabbitAwtUI implements RabbitUI {
 
 
 
+    @Override
+    public void startUpdateUI() {
+        getToShow = new EventToUi();
+        getToShow.start();
+    }
+
+    @Override
+    public boolean isRunning() {
+        return getToShow.isAlive();
+    }
+
+    @Override
+    public void stopUpdateUI() {
+        getToShow.needFinish();
+        try {
+            getToShow.join(3000);
+        } catch (InterruptedException e) {
+            System.out.println("wait UI MQ out of time, interrupt it...");
+            getToShow.interrupt();
+        }
+        getToShow = null;
+    }
+
+    @Override
+    public void destroyUI() {
+        background.removeAll();
+        background = null;
+        message = null;
+    }
+
     private void updateUI(Color backgroundColor, Color msgColor, String msg) {
 
         background.removeAll();
@@ -108,24 +143,40 @@ public class RabbitAwtUI implements RabbitUI {
         }
     }
 
-    @Override
-    public void startUpdateUI() {
 
-    }
 
-    @Override
-    public boolean isRunning() {
-        //TODO
-        return false;
-    }
+    private class EventToUi extends Thread {
 
-    @Override
-    public void stopUpdateUI() {
+        private static final String UI_MQ_NAME = "MessageQueueToUi";
 
-    }
+        private boolean goingWork = true;
 
-    @Override
-    public void destroyUI() {
+        public EventToUi() {
+            super(UI_MQ_NAME);
+        }
 
+        public void needFinish() {
+            goingWork = false;
+        }
+
+
+        @Override
+        public void run() {
+            while(goingWork) {
+                RabbitMessage msg = messageQueue.poll();
+
+                if(msg == null) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        System.out.println(UI_MQ_NAME + " interrupt sleep, it exits...");
+                        break;
+                    }
+                    continue;
+                }
+
+                updateUI(msg.getBackgroundColor(), msg.getWordColor(), msg.getMessage());
+            }
+        }
     }
 }
