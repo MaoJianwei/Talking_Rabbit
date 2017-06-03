@@ -1,11 +1,13 @@
 package org.mao.talking.rabbit.api;
 
+import java.util.Queue;
+
 /**
  * Created by mao on 17-5-30.
  */
 public interface RabbitUI {
 
-    void initUI();
+    void initUI(Queue msgQueue);
 
     void startUpdateUI();
 
