@@ -157,8 +157,8 @@ public class RabbitAwtUI implements RabbitUI {
                 return COLOR_YELLOW;
             case COLOR_STR_GREEN:
                 return COLOR_GREEN;
-            case COLOR_STR_STANDBY:
-                return COLOR_WHITE;
+//            TODO - not so simple = case COLOR_STR_STANDBY:
+//                return COLOR_WHITE;
             default:
                 //TODO
         }
@@ -197,6 +197,7 @@ public class RabbitAwtUI implements RabbitUI {
                     continue;
                 }
 
+                //TODO - not so simple
                 updateUI(getColor(msg.getBackgroundColor()), getColor(msg.getWordColor()), msg.getMessage());
             }
         }
