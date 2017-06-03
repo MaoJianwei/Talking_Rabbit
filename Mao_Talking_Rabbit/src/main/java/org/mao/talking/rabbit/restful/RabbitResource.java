@@ -15,6 +15,13 @@ import javax.ws.rs.core.Response;
 import java.util.Map;
 import java.util.Queue;
 
+import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_GREEN;
+import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_RED;
+import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_STANDBY;
+import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_YELLOW;
+import static org.mao.talking.rabbit.api.RabbitMessage.CUSTOM_COLOR_STR_REGEX;
+import static org.mao.talking.rabbit.api.RabbitMessage.checkColor;
+
 /**
  * Hello world!
  *
@@ -26,11 +33,6 @@ public class RabbitResource extends AbstractWebResource {
     private static final String CONTENT_TYPE_JSON = "application/json";
 
     // Custom colors should be "abcdef", "123abc", "987654", etc.
-    private static final String CUSTOM_COLOR_REGEX = "([0-9,a-f]{6})";
-    private static final String COLOR_RED = "red";
-    private static final String COLOR_GREEN = "green";
-    private static final String COLOR_YELLOW = "yellow";
-    private static final String COLOR_STANDBY = "standby";
 
     private static final String JSON_MSG_COLOR_RESP_CODE = "errcode";
     private static final String JSON_MSG_COLOR_RESP_MSG = "errmsg";
@@ -55,11 +57,9 @@ public class RabbitResource extends AbstractWebResource {
     @Produces(CONTENT_TYPE_JSON) // necessary !!!
     public Response colorEvent(@PathParam("color") String color) {
 
-        if(!checkColorInput(color)){
+        if(!checkColor(color)){
             return ok(buildResult(1, RESPONSE_ERROR_COLOR));
         }
-
-        color = calculateColor(color);
 
         messageQueue.offer(RabbitMessage.getRabbitMessage(color));
 
@@ -76,8 +76,8 @@ public class RabbitResource extends AbstractWebResource {
             return ok(buildResult(2, RESPONSE_ERROR_JSON));
         }
 
-        String backColor = calculateColor(rawMsgColor.get(JSON_MSG_COLOR_BACKGROUND_COLOR).asText());
-        String wordColor = calculateColor(rawMsgColor.get(JSON_MSG_COLOR_WORD_COLOR).asText());
+        String backColor = rawMsgColor.get(JSON_MSG_COLOR_BACKGROUND_COLOR).asText();
+        String wordColor = rawMsgColor.get(JSON_MSG_COLOR_WORD_COLOR).asText();
         String message = rawMsgColor.get(JSON_MSG_COLOR_MESSAGE).asText();
 
         messageQueue.offer(RabbitMessage.getRabbitMessage(backColor, wordColor, message));
@@ -91,7 +91,7 @@ public class RabbitResource extends AbstractWebResource {
     @Produces(CONTENT_TYPE_JSON)
     public Response clearEvent() {
 
-        messageQueue.offer(RabbitMessage.getRabbitMessage(COLOR_STANDBY));
+        messageQueue.offer(RabbitMessage.getRabbitMessage(COLOR_STR_STANDBY));
 
         return ok(buildResult(0, RESPONSE_OK));
     }
@@ -112,31 +112,6 @@ public class RabbitResource extends AbstractWebResource {
         return data;
     }
 
-    private String calculateColor(String rawColor) {
-        return rawColor.trim().toLowerCase();
-    }
-
-    private Boolean checkColorInput(String rawColor) {
-        String trimLowerCase = rawColor.trim().toLowerCase();
-        if(trimLowerCase.equals(COLOR_RED) ||
-                trimLowerCase.equals(COLOR_GREEN) ||
-                trimLowerCase.equals(COLOR_YELLOW) ||
-                trimLowerCase.equals(COLOR_STANDBY) ||
-                isCustomColor(trimLowerCase)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    // Custom colors should be "abcdef", "123abc", "987654", etc.
-    private boolean isCustomColor(String trimLowerCase) {
-        if(trimLowerCase.length() == 6 && trimLowerCase.matches(CUSTOM_COLOR_REGEX)) {
-            return true;
-        }
-        return false;
-    }
-
     private boolean checkMessageColorInput(ObjectNode rawMsgColor) {
 
         if(rawMsgColor.size() != 3 ||
@@ -147,8 +122,8 @@ public class RabbitResource extends AbstractWebResource {
             return false;
         }
 
-        if(!checkColorInput(rawMsgColor.get(JSON_MSG_COLOR_BACKGROUND_COLOR).asText()) ||
-                !checkColorInput(rawMsgColor.get(JSON_MSG_COLOR_WORD_COLOR).asText())) {
+        if(!checkColor(rawMsgColor.get(JSON_MSG_COLOR_BACKGROUND_COLOR).asText()) ||
+                !checkColor(rawMsgColor.get(JSON_MSG_COLOR_WORD_COLOR).asText())) {
             return false;
         }
 

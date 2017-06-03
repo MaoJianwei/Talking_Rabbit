@@ -8,6 +8,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.*;
 
+import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_GREEN;
+import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_RED;
+import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_STANDBY;
+import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_YELLOW;
+
 
 /**
  * Created by mao on 17-5-30.
@@ -143,6 +148,23 @@ public class RabbitAwtUI implements RabbitUI {
         }
     }
 
+    private Color getColor(String colorStr){
+
+        switch(colorStr) {
+            case COLOR_STR_RED:
+                return COLOR_RED;
+            case COLOR_STR_YELLOW:
+                return COLOR_YELLOW;
+            case COLOR_STR_GREEN:
+                return COLOR_GREEN;
+            case COLOR_STR_STANDBY:
+                return COLOR_WHITE;
+            default:
+                //TODO
+        }
+
+    }
+
 
 
     private class EventToUi extends Thread {
@@ -175,7 +197,7 @@ public class RabbitAwtUI implements RabbitUI {
                     continue;
                 }
 
-                updateUI(msg.getBackgroundColor(), msg.getWordColor(), msg.getMessage());
+                updateUI(getColor(msg.getBackgroundColor()), getColor(msg.getWordColor()), msg.getMessage());
             }
         }
     }
