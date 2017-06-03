@@ -2,6 +2,7 @@ package org.mao.talking.rabbit.impl;
 
 import org.mao.talking.rabbit.api.RabbitMessage;
 import org.mao.talking.rabbit.api.RabbitServer;
+import org.mao.talking.rabbit.api.RabbitUI;
 import org.mao.talking.rabbit.restful.RabbitResource;
 
 import java.util.Queue;
@@ -17,6 +18,7 @@ public final class MaoRabbitManager {
     private static final MaoRabbitManager rabbit = new MaoRabbitManager();
 
 
+    private RabbitUI monitorUi;
     private RabbitServer webServer;
     private Queue<RabbitMessage> messageQueue;
 
@@ -66,6 +68,8 @@ public final class MaoRabbitManager {
         // init UI manager
         // init UI resource
         // UI - show Standby view
+        monitorUi = RabbitAwtUI.getRabbitUI();
+        monitorUi.initUI(messageQueue);
 
         // init Web server instance
         lastTime = System.currentTimeMillis();
@@ -91,6 +95,8 @@ public final class MaoRabbitManager {
 
 
         // UI manager starts to listen to / pull from MQ
+        monitorUi.startUpdateUI();
+        verifyMonitorRunning();
 
         // start Web server and verify that it is working well
         lastTime = System.currentTimeMillis();
@@ -98,7 +104,7 @@ public final class MaoRabbitManager {
         System.out.println(System.currentTimeMillis()-lastTime);
 
         lastTime = System.currentTimeMillis();
-        varifyServerRunning();
+        verifyServerRunning();
         System.out.println(System.currentTimeMillis()-lastTime);
     }
 
@@ -119,12 +125,13 @@ public final class MaoRabbitManager {
         System.out.println(System.currentTimeMillis()-lastTime);
 
         lastTime = System.currentTimeMillis();
-        varifyServerStopped();
+        verifyServerStopped();
         System.out.println(System.currentTimeMillis()-lastTime);
 
 
-
         // UI manager stop to listen to / pull from MQ
+        monitorUi.stopUpdateUI();
+        verifyMonitorStopped();
     }
 
     /**
@@ -154,13 +161,43 @@ public final class MaoRabbitManager {
 
         // release UI resource
         // release UI manager
+        monitorUi.destroyUI();
     }
 
 
 
 
+    private void verifyMonitorRunning() {
 
-    private void varifyServerRunning() {
+        for(int i = 0; !monitorUi.isRunning() && i < 6; i++){
+
+            System.out.println(i);
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                System.out.println("monitor start InterruptedException, quit confirmation!");
+                break;
+            }
+        }
+    }
+
+    private void verifyMonitorStopped() {
+
+        for(int i = 0; monitorUi.isRunning() && i < 6; i++){
+
+            System.out.println(i);
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                System.out.println("monitor stop InterruptedException, quit confirmation!");
+                break;
+            }
+        }
+    }
+
+    private void verifyServerRunning() {
 
         for(int i = 0; !webServer.isRunning() && i < 6; i++){
 
@@ -169,13 +206,13 @@ public final class MaoRabbitManager {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                System.out.println("InterruptedException, quit confirmation!");
+                System.out.println("server start InterruptedException, quit confirmation!");
                 break;
             }
         }
     }
 
-    private void varifyServerStopped() {
+    private void verifyServerStopped() {
 
         for(int i = 0; webServer.isRunning() && i < 6; i++){
 
@@ -184,7 +221,7 @@ public final class MaoRabbitManager {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                System.out.println("InterruptedException, quit confirmation!");
+                System.out.println("server stop InterruptedException, quit confirmation!");
                 break;
             }
         }

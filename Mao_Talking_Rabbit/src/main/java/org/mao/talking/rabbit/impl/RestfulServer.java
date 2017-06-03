@@ -22,7 +22,7 @@ public class RestfulServer implements RabbitServer {
     // example: "http://localhost:8080/myapp/"
     public static final String BASE_URI = "http://0.0.0.0:10110/";
 
-    private volatile static RestfulServer restServer;
+    private volatile static RabbitServer restServer;
 
 
     private HttpServer httpServer;
