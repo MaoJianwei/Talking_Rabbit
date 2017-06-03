@@ -2,6 +2,7 @@ package org.mao.talking.rabbit.impl;
 
 import org.mao.talking.rabbit.api.RabbitMessage;
 import org.mao.talking.rabbit.api.RabbitServer;
+import org.mao.talking.rabbit.api.RabbitUI;
 import org.mao.talking.rabbit.restful.RabbitResource;
 
 import java.util.Queue;
@@ -17,6 +18,7 @@ public final class MaoRabbitManager {
     private static final MaoRabbitManager rabbit = new MaoRabbitManager();
 
 
+    private RabbitUI monitorUi;
     private RabbitServer webServer;
     private Queue<RabbitMessage> messageQueue;
 
@@ -66,6 +68,8 @@ public final class MaoRabbitManager {
         // init UI manager
         // init UI resource
         // UI - show Standby view
+        monitorUi = RabbitAwtUI.getRabbitUI();
+        monitorUi.initUI(messageQueue);
 
         // init Web server instance
         lastTime = System.currentTimeMillis();
@@ -91,6 +95,7 @@ public final class MaoRabbitManager {
 
 
         // UI manager starts to listen to / pull from MQ
+        monitorUi.startUpdateUI();
 
         // start Web server and verify that it is working well
         lastTime = System.currentTimeMillis();
@@ -123,8 +128,8 @@ public final class MaoRabbitManager {
         System.out.println(System.currentTimeMillis()-lastTime);
 
 
-
         // UI manager stop to listen to / pull from MQ
+        monitorUi.stopUpdateUI();
     }
 
     /**
@@ -154,6 +159,7 @@ public final class MaoRabbitManager {
 
         // release UI resource
         // release UI manager
+        monitorUi.destroyUI();
     }
 
 

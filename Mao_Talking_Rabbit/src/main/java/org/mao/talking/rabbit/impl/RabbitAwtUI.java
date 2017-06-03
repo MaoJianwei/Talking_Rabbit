@@ -5,6 +5,7 @@ import org.mao.talking.rabbit.api.RabbitUI;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.*;
 
 
 /**
@@ -27,6 +28,11 @@ public class RabbitAwtUI implements RabbitUI {
         ;
     }
 
+    private static Queue messageQueue;
+
+    public static void setMessageQueue(Queue queue) {
+    }
+
     public static RabbitUI getRabbitUI() {
         if (awtUi == null) {
             synchronized (RabbitAwtUI.class) {
@@ -45,15 +51,15 @@ public class RabbitAwtUI implements RabbitUI {
 
 
     @Override
-    public void initUI() {
+    public void initUI(Queue msgQueue) {
+
+        messageQueue = msgQueue;
 
         initWords();
 
         initBackground();
 
         showStandBy();
-
-        background.setVisible(true);
     }
 
     private void initBackground() {
@@ -83,7 +89,10 @@ public class RabbitAwtUI implements RabbitUI {
 
     private void showStandBy() {
         updateUI(COLOR_WHITE, COLOR_BLACK, "Talking Rabbit :) Standby");
+        background.setVisible(true);
     }
+
+
 
     private void updateUI(Color backgroundColor, Color msgColor, String msg) {
 
@@ -91,10 +100,12 @@ public class RabbitAwtUI implements RabbitUI {
 
         background.setBackground(backgroundColor);
 
-        message.setText(msg);
-        message.setForeground(msgColor);
+        if(msgColor != null && msg != null) {
+            message.setText(msg);
+            message.setForeground(msgColor);
 
-        background.add(message);
+            background.add(message);
+        }
     }
 
     @Override
