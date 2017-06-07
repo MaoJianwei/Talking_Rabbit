@@ -21,10 +21,28 @@ public class RabbitMessage {
     private String message;
 
 
+    /**
+     * Return a new RabbitMessage only if the input data is valid.
+     *
+     * This is inter-module interface guarantee!
+     *
+     * @param backgroundColor
+     * @return
+     */
     public static RabbitMessage getRabbitMessage(String backgroundColor) {
         return getRabbitMessage(backgroundColor, null, null);
     }
 
+    /**
+     * Return a new RabbitMessage only if the input data is valid.
+     *
+     * This is inter-module interface guarantee!
+     *
+     * @param backgroundColor
+     * @param wordColor
+     * @param message
+     * @return
+     */
     public static RabbitMessage getRabbitMessage(String backgroundColor, String wordColor, String message) {
 
         // calculate first, reduce GC

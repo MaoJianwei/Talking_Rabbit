@@ -54,9 +54,9 @@ public class RabbitAwtUI implements RabbitUI {
         return awtUi;
     }
 
-    public static void setMessageQueue(Queue queue) {
-        messageQueue = queue;
-    }
+//    private static void setMessageQueue(Queue queue) {
+//        messageQueue = queue;
+//    }
 
 
 
@@ -70,6 +70,14 @@ public class RabbitAwtUI implements RabbitUI {
         initBackground();
 
         showStandBy();
+
+        background.setVisible(true);
+    }
+
+    private void initWords() {
+        message = new Label("Talking Rabbit :) Standby");
+        message.setAlignment(Label.CENTER);
+        message.setFont(new Font(null, 0, 18));
     }
 
     private void initBackground() {
@@ -91,15 +99,8 @@ public class RabbitAwtUI implements RabbitUI {
 
     }
 
-    private void initWords() {
-        message = new Label("Talking Rabbit :) Standby");
-        message.setAlignment(Label.CENTER);
-        message.setFont(new Font(null, 0, 18));
-    }
-
     private void showStandBy() {
         updateUI(COLOR_WHITE, COLOR_BLACK, "Talking Rabbit :) Standby");
-        background.setVisible(true);
     }
 
 
@@ -117,13 +118,20 @@ public class RabbitAwtUI implements RabbitUI {
 
     @Override
     public void stopUpdateUI() {
+
         getToShow.needFinish();
+
         try {
+
             getToShow.join(3000);
+
         } catch (InterruptedException e) {
+
             System.out.println("wait UI MQ out of time, interrupt it...");
+
             getToShow.interrupt();
         }
+
         getToShow = null;
     }
 
@@ -148,22 +156,7 @@ public class RabbitAwtUI implements RabbitUI {
         }
     }
 
-    private Color getColor(String colorStr){
 
-        switch(colorStr) {
-            case COLOR_STR_RED:
-                return COLOR_RED;
-            case COLOR_STR_YELLOW:
-                return COLOR_YELLOW;
-            case COLOR_STR_GREEN:
-                return COLOR_GREEN;
-//            TODO - not so simple = case COLOR_STR_STANDBY:
-//                return COLOR_WHITE;
-            default:
-                //TODO
-        }
-
-    }
 
 
 
@@ -184,7 +177,9 @@ public class RabbitAwtUI implements RabbitUI {
 
         @Override
         public void run() {
+
             while(goingWork) {
+
                 RabbitMessage msg = messageQueue.poll();
 
                 if(msg == null) {
@@ -197,9 +192,35 @@ public class RabbitAwtUI implements RabbitUI {
                     continue;
                 }
 
-                //TODO - not so simple
-                updateUI(getColor(msg.getBackgroundColor()), getColor(msg.getWordColor()), msg.getMessage());
+                if(msg.getBackgroundColor() == COLOR_STR_STANDBY) {
+
+                    showStandBy();
+
+                } else {
+
+                    updateUI(getColor(msg.getBackgroundColor()), getColor(msg.getWordColor()), msg.getMessage());
+
+                }
             }
+        }
+
+        private Color getColor(String colorStr){
+
+            // TODO
+
+            switch(colorStr) {
+                case COLOR_STR_RED:
+                    return COLOR_RED;
+                case COLOR_STR_YELLOW:
+                    return COLOR_YELLOW;
+                case COLOR_STR_GREEN:
+                    return COLOR_GREEN;
+                case COLOR_STR_STANDBY:
+                    return null;
+                default:
+                    //TODO
+            }
+
         }
     }
 }
