@@ -42,8 +42,15 @@ public class RabbitResource extends AbstractWebResource {
     private static final String JSON_MSG_COLOR_MESSAGE = "message";
 
     private static final String RESPONSE_OK = "ok";
+    private static final String RESPONSE_ERROR_UNKNOWN = "Message transfer unknown error";
     private static final String RESPONSE_ERROR_COLOR = "Color fields error";
     private static final String RESPONSE_ERROR_JSON = "JSON key or value error";
+
+    private static final int RESPONSE_CODE_OK = 0;
+    private static final int RESPONSE_CODE_ERROR_UNKNOWN = -1;
+    private static final int RESPONSE_CODE_ERROR_COLOR = 1;
+    private static final int RESPONSE_CODE_ERROR_JSON = 2;
+
 
 
     private static Queue messageQueue;
@@ -57,13 +64,19 @@ public class RabbitResource extends AbstractWebResource {
     @Produces(CONTENT_TYPE_JSON) // necessary !!!
     public Response colorEvent(@PathParam("color") String color) {
 
-        if(!checkColor(color)){
-            return ok(buildResult(1, RESPONSE_ERROR_COLOR));
+        RabbitMessage pureColorShow = RabbitMessage.getRabbitMessage(color);
+
+        if(pureColorShow != null) {
+
+            return messageQueue.offer(pureColorShow)
+                    ? ok(buildResult(RESPONSE_CODE_OK, RESPONSE_OK))
+                    : ok(buildResult(RESPONSE_CODE_ERROR_UNKNOWN, RESPONSE_ERROR_UNKNOWN));
+
+        } else {
+
+            return ok(buildResult(RESPONSE_CODE_ERROR_COLOR, RESPONSE_ERROR_COLOR));
         }
 
-        messageQueue.offer(RabbitMessage.getRabbitMessage(color));
-
-        return ok(buildResult(0, RESPONSE_OK));
     }
 
     @POST
@@ -73,7 +86,7 @@ public class RabbitResource extends AbstractWebResource {
     public Response messageColorEvent(ObjectNode rawMsgColor) {
 
         if(!checkMessageColorInput(rawMsgColor)) {
-            return ok(buildResult(2, RESPONSE_ERROR_JSON));
+            return ok(buildResult(RESPONSE_CODE_ERROR_JSON, RESPONSE_ERROR_JSON));
         }
 
         String backColor = rawMsgColor.get(JSON_MSG_COLOR_BACKGROUND_COLOR).asText();
@@ -83,7 +96,7 @@ public class RabbitResource extends AbstractWebResource {
         messageQueue.offer(RabbitMessage.getRabbitMessage(backColor, wordColor, message));
 
 
-        return ok(buildResult(0, RESPONSE_OK));
+        return ok(buildResult(RESPONSE_CODE_OK, RESPONSE_OK));
     }
 
     @GET
@@ -93,7 +106,7 @@ public class RabbitResource extends AbstractWebResource {
 
         messageQueue.offer(RabbitMessage.getRabbitMessage(COLOR_STR_STANDBY));
 
-        return ok(buildResult(0, RESPONSE_OK));
+        return ok(buildResult(RESPONSE_CODE_OK, RESPONSE_OK));
     }
 
     private ObjectNode buildResult(int code, String message) {
