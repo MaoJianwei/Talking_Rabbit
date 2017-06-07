@@ -25,13 +25,26 @@ public class RabbitMessage {
     }
 
     public static RabbitMessage getRabbitMessage(String backgroundColor, String wordColor, String message) {
-        return new RabbitMessage(backgroundColor, wordColor, message);
+
+        // calculate first, reduce GC
+
+        backgroundColor = backgroundColor != null ? calculateColor(backgroundColor) : backgroundColor;
+
+        wordColor = wordColor != null ? calculateColor(wordColor) : wordColor;
+
+
+        return checkValid(backgroundColor, wordColor, message)
+                ? new RabbitMessage(backgroundColor, wordColor, message)
+                : null;
     }
+
     private RabbitMessage(String backgroundColor, String wordColor, String message) {
-        this.backgroundColor = calculateColor(backgroundColor);
-        this.wordColor = calculateColor(wordColor);
+        this.backgroundColor = backgroundColor;
+        this.wordColor = wordColor;
         this.message = message;
     }
+
+
 
     public String getBackgroundColor() {
         return backgroundColor;
@@ -45,7 +58,9 @@ public class RabbitMessage {
         return message;
     }
 
-    public boolean checkValid() {
+
+
+    private static boolean checkValid(String backgroundColor, String wordColor, String message) {
 
         if(!checkColor(backgroundColor)) {
             return false;
@@ -67,8 +82,7 @@ public class RabbitMessage {
 
 
 
-    public static boolean checkColor(String rawColor) {
-        String trimLowerCase = calculateColor(rawColor);
+    private static boolean checkColor(String trimLowerCase) {
 
         if(trimLowerCase.equals(COLOR_STR_RED) ||
                 trimLowerCase.equals(COLOR_STR_GREEN) ||
