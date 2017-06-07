@@ -8,6 +8,7 @@ import java.awt.Color;
  */
 public class RabbitMessage {
 
+    // Custom colors should be "abcdef", "123abc", "987654", etc.
     public static final String CUSTOM_COLOR_STR_REGEX = "([0-9,a-f]{6})";
 
     public static final String COLOR_STR_RED = "red";

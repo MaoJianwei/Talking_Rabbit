@@ -32,7 +32,6 @@ public class RabbitResource extends AbstractWebResource {
 
     private static final String CONTENT_TYPE_JSON = "application/json";
 
-    // Custom colors should be "abcdef", "123abc", "987654", etc.
 
     private static final String JSON_MSG_COLOR_RESP_CODE = "errcode";
     private static final String JSON_MSG_COLOR_RESP_MSG = "errmsg";
@@ -42,7 +41,7 @@ public class RabbitResource extends AbstractWebResource {
     private static final String JSON_MSG_COLOR_MESSAGE = "message";
 
     private static final String RESPONSE_OK = "ok";
-    private static final String RESPONSE_ERROR_UNKNOWN = "Message transfer unknown error";
+    private static final String RESPONSE_ERROR_UNKNOWN = "Internal message transfer unknown error";
     private static final String RESPONSE_ERROR_COLOR = "Color fields error";
     private static final String RESPONSE_ERROR_JSON = "JSON key or value error";
 
@@ -85,18 +84,20 @@ public class RabbitResource extends AbstractWebResource {
     @Consumes(CONTENT_TYPE_JSON) // necessary !!!
     public Response messageColorEvent(ObjectNode rawMsgColor) {
 
-        if(!checkMessageColorInput(rawMsgColor)) {
+        RabbitMessage msgColorShow = RabbitMessage.getRabbitMessage(
+                rawMsgColor.get(JSON_MSG_COLOR_BACKGROUND_COLOR).asText(),
+                rawMsgColor.get(JSON_MSG_COLOR_WORD_COLOR).asText(),
+                rawMsgColor.get(JSON_MSG_COLOR_MESSAGE).asText());
+
+        if(msgColorShow != null) {
+
+            return messageQueue.offer(msgColorShow)
+                    ? ok(buildResult(RESPONSE_CODE_OK, RESPONSE_OK))
+                    : ok(buildResult(RESPONSE_CODE_ERROR_UNKNOWN, RESPONSE_ERROR_UNKNOWN));
+        } else {
+
             return ok(buildResult(RESPONSE_CODE_ERROR_JSON, RESPONSE_ERROR_JSON));
         }
-
-        String backColor = rawMsgColor.get(JSON_MSG_COLOR_BACKGROUND_COLOR).asText();
-        String wordColor = rawMsgColor.get(JSON_MSG_COLOR_WORD_COLOR).asText();
-        String message = rawMsgColor.get(JSON_MSG_COLOR_MESSAGE).asText();
-
-        messageQueue.offer(RabbitMessage.getRabbitMessage(backColor, wordColor, message));
-
-
-        return ok(buildResult(RESPONSE_CODE_OK, RESPONSE_OK));
     }
 
     @GET
@@ -104,10 +105,11 @@ public class RabbitResource extends AbstractWebResource {
     @Produces(CONTENT_TYPE_JSON)
     public Response clearEvent() {
 
-        messageQueue.offer(RabbitMessage.getRabbitMessage(COLOR_STR_STANDBY));
-
-        return ok(buildResult(RESPONSE_CODE_OK, RESPONSE_OK));
+        return messageQueue.offer(RabbitMessage.getRabbitMessage(COLOR_STR_STANDBY))
+                ? ok(buildResult(RESPONSE_CODE_OK, RESPONSE_OK))
+                : ok(buildResult(RESPONSE_CODE_ERROR_UNKNOWN, RESPONSE_ERROR_UNKNOWN));
     }
+
 
     private ObjectNode buildResult(int code, String message) {
         return buildResult(code, message, null);
@@ -123,24 +125,6 @@ public class RabbitResource extends AbstractWebResource {
         }
 
         return data;
-    }
-
-    private boolean checkMessageColorInput(ObjectNode rawMsgColor) {
-
-        if(rawMsgColor.size() != 3 ||
-                rawMsgColor.get(JSON_MSG_COLOR_BACKGROUND_COLOR) == null ||
-                rawMsgColor.get(JSON_MSG_COLOR_WORD_COLOR) == null ||
-                rawMsgColor.get(JSON_MSG_COLOR_MESSAGE) == null) {
-
-            return false;
-        }
-
-        if(!checkColor(rawMsgColor.get(JSON_MSG_COLOR_BACKGROUND_COLOR).asText()) ||
-                !checkColor(rawMsgColor.get(JSON_MSG_COLOR_WORD_COLOR).asText())) {
-            return false;
-        }
-
-        return true;
     }
 }
 
