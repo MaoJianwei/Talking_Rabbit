@@ -8,6 +8,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.*;
 
+import static java.lang.Integer.valueOf;
 import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_GREEN;
 import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_RED;
 import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_STANDBY;
@@ -206,21 +207,38 @@ public class RabbitAwtUI implements RabbitUI {
 
         private Color getColor(String colorStr){
 
-            // TODO
-
             switch(colorStr) {
                 case COLOR_STR_RED:
                     return COLOR_RED;
+
                 case COLOR_STR_YELLOW:
                     return COLOR_YELLOW;
+
                 case COLOR_STR_GREEN:
                     return COLOR_GREEN;
+
                 case COLOR_STR_STANDBY:
+                    /* Bypass this outside */
                     return null;
                 default:
-                    //TODO
+                    return calculateColor(colorStr);
             }
 
+        }
+
+        /**
+         * Get new Color defined by RGB.
+         *
+         * @param customColor Custom colors should be "abcdef", "123abc", "987654", etc.
+         * @return
+         */
+        private Color calculateColor(String customColor) {
+
+            String R = customColor.substring(0,2);
+            String G = customColor.substring(2,4);
+            String B = customColor.substring(4,6);
+
+            return new Color(valueOf(R, 16), valueOf(G, 16), valueOf(B, 16));
         }
     }
 }
