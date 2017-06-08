@@ -169,6 +169,8 @@ public class RabbitAwtUI implements RabbitUI {
     private class EventToUi extends Thread {
 
         private static final String UI_MQ_NAME = "MessageQueueToUi";
+        private static final int UI_MQ_WAIT_TIMEOUT = 10;
+
 
         private boolean goingWork = true;
 
@@ -190,7 +192,7 @@ public class RabbitAwtUI implements RabbitUI {
 
                 if(msg == null) {
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(UI_MQ_WAIT_TIMEOUT);
                     } catch (InterruptedException e) {
                         System.out.println(UI_MQ_NAME + " interrupt sleep, it exits...");
                         break;
@@ -198,7 +200,7 @@ public class RabbitAwtUI implements RabbitUI {
                     continue;
                 }
 
-                if(msg.getBackgroundColor() == COLOR_STR_STANDBY) {
+                if(msg.getBackgroundColor().equals(COLOR_STR_STANDBY)) {
 
                     showStandBy();
 
@@ -212,7 +214,12 @@ public class RabbitAwtUI implements RabbitUI {
 
         private Color getColor(String colorStr){
 
+            if(colorStr == null) {
+                return null;
+            }
+
             switch(colorStr) {
+
                 case COLOR_STR_RED:
                     return COLOR_RED;
 

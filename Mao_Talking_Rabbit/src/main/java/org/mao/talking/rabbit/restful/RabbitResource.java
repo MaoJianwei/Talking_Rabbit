@@ -95,7 +95,7 @@ public class RabbitResource extends AbstractWebResource {
     }
 
     @GET
-    @Path("clear")
+    @Path("/clear")
     @Produces(CONTENT_TYPE_JSON)
     public Response clearEvent() {
 
