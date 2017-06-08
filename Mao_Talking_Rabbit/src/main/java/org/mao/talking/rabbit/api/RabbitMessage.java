@@ -1,8 +1,6 @@
 package org.mao.talking.rabbit.api;
 
 
-import java.awt.Color;
-
 /**
  * Created by mao on 17-5-30.
  */

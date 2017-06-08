@@ -8,19 +8,13 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.PathParam;
-
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import java.util.Map;
 import java.util.Queue;
 
-import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_GREEN;
-import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_RED;
 import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_STANDBY;
-import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_YELLOW;
-import static org.mao.talking.rabbit.api.RabbitMessage.CUSTOM_COLOR_STR_REGEX;
-import static org.mao.talking.rabbit.api.RabbitMessage.checkColor;
 
 /**
  * Hello world!

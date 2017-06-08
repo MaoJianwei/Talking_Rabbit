@@ -2,7 +2,6 @@ package org.mao.talking.rabbit.impl;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import org.glassfish.jersey.server.ResourceConfig;
 import org.mao.talking.rabbit.api.RabbitServer;
 import org.mao.talking.rabbit.restful.RabbitWebApplication;
 

@@ -3,10 +3,15 @@ package org.mao.talking.rabbit.impl;
 import org.mao.talking.rabbit.api.RabbitMessage;
 import org.mao.talking.rabbit.api.RabbitUI;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Label;
+import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.*;
+import java.util.Queue;
 
 import static java.lang.Integer.valueOf;
 import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_GREEN;
