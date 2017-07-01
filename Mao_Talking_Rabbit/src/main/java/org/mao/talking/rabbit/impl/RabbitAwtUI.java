@@ -13,6 +13,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Queue;
 
+import static java.awt.event.WindowEvent.WINDOW_CLOSING;
 import static java.lang.Integer.valueOf;
 import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_GREEN;
 import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_RED;
@@ -119,7 +120,7 @@ public class RabbitAwtUI implements RabbitUI {
 
     @Override
     public boolean isRunning() {
-        return getToShow.isAlive();
+        return getToShow != null && getToShow.isAlive();
     }
 
     @Override
@@ -144,6 +145,8 @@ public class RabbitAwtUI implements RabbitUI {
     @Override
     public void destroyUI() {
         background.removeAll();
+        background.setVisible(false);
+        background.dispatchEvent(new WindowEvent(background, WINDOW_CLOSING));
         background = null;
         message = null;
     }
@@ -207,7 +210,6 @@ public class RabbitAwtUI implements RabbitUI {
                 } else {
 
                     updateUI(getColor(msg.getBackgroundColor()), getColor(msg.getWordColor()), msg.getMessage());
-
                 }
             }
         }

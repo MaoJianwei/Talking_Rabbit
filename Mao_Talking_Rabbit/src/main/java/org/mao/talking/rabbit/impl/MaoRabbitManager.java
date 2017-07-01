@@ -25,25 +25,19 @@ public final class MaoRabbitManager implements MaoRabbitService {
     private RabbitServer webServer;
     private Queue<RabbitMessage> messageQueue;
 
-    private long lastTime;
-
 
     public static void main (String [] args) {
         rabbit.init();
         rabbit.rabbitRun();
 
-
-//        while(true) {
-//            try {
-//                Thread.sleep(1000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//                //break;
-//            }
-//        }
-
         try {
-            exitSignal.wait();
+            synchronized (exitSignal) {
+                exitSignal.wait();
+            }
+
+            //wait for Server response finish.
+            Thread.sleep(1000);
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -53,7 +47,9 @@ public final class MaoRabbitManager implements MaoRabbitService {
     }
 
     public void shutdownGracefully() {
-        exitSignal.notify();
+        synchronized (exitSignal) {
+            exitSignal.notify();
+        }
     }
 
     /**
@@ -77,13 +73,9 @@ public final class MaoRabbitManager implements MaoRabbitService {
         monitorUi.initUI(messageQueue);
 
         // init Web server instance
-        lastTime = System.currentTimeMillis();
         webServer = RestfulServer.getRabbitServer();
-        System.out.println(System.currentTimeMillis()-lastTime);
 
-        lastTime = System.currentTimeMillis();
         webServer.initInterface();
-        System.out.println(System.currentTimeMillis()-lastTime);
 
         RabbitResource.setMessageQueue(messageQueue);
         RabbitResource.setRabbitService(this);
@@ -105,13 +97,9 @@ public final class MaoRabbitManager implements MaoRabbitService {
         verifyMonitorRunning();
 
         // start Web server and verify that it is working well
-        lastTime = System.currentTimeMillis();
         webServer.startInterface();
-        System.out.println(System.currentTimeMillis()-lastTime);
 
-        lastTime = System.currentTimeMillis();
         verifyServerRunning();
-        System.out.println(System.currentTimeMillis()-lastTime);
     }
 
     /**
@@ -126,13 +114,9 @@ public final class MaoRabbitManager implements MaoRabbitService {
 
 
         // stop Web server and release network resource
-        lastTime = System.currentTimeMillis();
         webServer.stopInterface();
-        System.out.println(System.currentTimeMillis()-lastTime);
 
-        lastTime = System.currentTimeMillis();
         verifyServerStopped();
-        System.out.println(System.currentTimeMillis()-lastTime);
 
 
         // UI manager stop to listen to / pull from MQ
@@ -155,10 +139,8 @@ public final class MaoRabbitManager implements MaoRabbitService {
         // Call rabbitRest() first!
 
         // release Web server instance
-        lastTime = System.currentTimeMillis();
         webServer.destroyInterface();
         webServer = null;
-        System.out.println(System.currentTimeMillis()-lastTime);
 
 
         // clear and release MQ
