@@ -1,12 +1,7 @@
 package org.mao.talking.rabbit.restful;
 
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.glassfish.jersey.server.ResourceConfig;
-
-import javax.ws.rs.core.Application;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by mao on 17-5-12.
