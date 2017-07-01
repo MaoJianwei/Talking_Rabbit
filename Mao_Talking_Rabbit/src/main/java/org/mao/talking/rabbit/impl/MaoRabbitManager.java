@@ -1,5 +1,6 @@
 package org.mao.talking.rabbit.impl;
 
+import org.mao.talking.rabbit.api.MaoRabbitService;
 import org.mao.talking.rabbit.api.RabbitMessage;
 import org.mao.talking.rabbit.api.RabbitServer;
 import org.mao.talking.rabbit.api.RabbitUI;
@@ -13,9 +14,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  *
  * Created by mao on 17-5-12.
  */
-public final class MaoRabbitManager {
+public final class MaoRabbitManager implements MaoRabbitService {
 
     private static final MaoRabbitManager rabbit = new MaoRabbitManager();
+
+    private static final Object exitSignal = new Object();
 
 
     private RabbitUI monitorUi;
@@ -30,25 +33,27 @@ public final class MaoRabbitManager {
         rabbit.rabbitRun();
 
 
-        while(true) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                //break;
-            }
-        }
-
-
-        // TODO -
-//        try {
-//            Thread.sleep(10000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
+//        while(true) {
+//            try {
+//                Thread.sleep(1000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//                //break;
+//            }
 //        }
 
-//        rabbit.rabbitRest();
-//        rabbit.destroy();
+        try {
+            exitSignal.wait();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        rabbit.rabbitRest();
+        rabbit.destroy();
+    }
+
+    public void shutdownGracefully() {
+        exitSignal.notify();
     }
 
     /**
@@ -81,6 +86,7 @@ public final class MaoRabbitManager {
         System.out.println(System.currentTimeMillis()-lastTime);
 
         RabbitResource.setMessageQueue(messageQueue);
+        RabbitResource.setRabbitService(this);
     }
 
     /**
