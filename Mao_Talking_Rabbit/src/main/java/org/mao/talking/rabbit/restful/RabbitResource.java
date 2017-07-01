@@ -2,6 +2,7 @@ package org.mao.talking.rabbit.restful;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.mao.talking.rabbit.api.AbstractWebResource;
+import org.mao.talking.rabbit.api.MaoRabbitService;
 import org.mao.talking.rabbit.api.RabbitMessage;
 
 import javax.ws.rs.*;
@@ -18,10 +19,16 @@ public class RabbitResource extends AbstractWebResource {
 
     private static Queue messageQueue;
 
+    private static MaoRabbitService maoRabbitService;
+
+
     public static void setMessageQueue(Queue queue) {
         messageQueue = queue;
     }
 
+    public static void setRabbitService(MaoRabbitService rabbitService) {
+        maoRabbitService = rabbitService;
+    }
 
     @GET
     @Path("/testGet")
