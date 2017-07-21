@@ -1,7 +1,7 @@
-package org.mao.talking.rabbit.impl;
+package com.maojianwei.talking.rabbit.impl;
 
-import org.mao.talking.rabbit.api.RabbitMessage;
-import org.mao.talking.rabbit.api.RabbitUI;
+import com.maojianwei.talking.rabbit.api.RabbitMessage;
+import com.maojianwei.talking.rabbit.api.RabbitUI;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,10 +15,6 @@ import java.util.Queue;
 
 import static java.awt.event.WindowEvent.WINDOW_CLOSING;
 import static java.lang.Integer.valueOf;
-import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_GREEN;
-import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_RED;
-import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_STANDBY;
-import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_YELLOW;
 
 
 /**
@@ -203,7 +199,7 @@ public class RabbitAwtUI implements RabbitUI {
                     continue;
                 }
 
-                if(msg.getBackgroundColor().equals(COLOR_STR_STANDBY)) {
+                if(msg.getBackgroundColor().equals(RabbitMessage.COLOR_STR_STANDBY)) {
 
                     showStandBy();
 
@@ -222,16 +218,16 @@ public class RabbitAwtUI implements RabbitUI {
 
             switch(colorStr) {
 
-                case COLOR_STR_RED:
+                case RabbitMessage.COLOR_STR_RED:
                     return COLOR_RED;
 
-                case COLOR_STR_YELLOW:
+                case RabbitMessage.COLOR_STR_YELLOW:
                     return COLOR_YELLOW;
 
-                case COLOR_STR_GREEN:
+                case RabbitMessage.COLOR_STR_GREEN:
                     return COLOR_GREEN;
 
-                case COLOR_STR_STANDBY:
+                case RabbitMessage.COLOR_STR_STANDBY:
                     /* Bypass this outside */
                     return null;
                 default:

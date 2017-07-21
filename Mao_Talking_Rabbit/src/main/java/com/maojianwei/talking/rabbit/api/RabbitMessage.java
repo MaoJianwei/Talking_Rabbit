@@ -1,4 +1,4 @@
-package org.mao.talking.rabbit.api;
+package com.maojianwei.talking.rabbit.api;
 
 
 /**
@@ -24,8 +24,8 @@ public class RabbitMessage {
      *
      * This is inter-module interface guarantee!
      *
-     * @param backgroundColor
-     * @return
+     * @param backgroundColor background color for screen
+     * @return new RabbitMessage object
      */
     public static RabbitMessage getRabbitMessage(String backgroundColor) {
         return getRabbitMessage(backgroundColor, null, null);
@@ -36,10 +36,10 @@ public class RabbitMessage {
      *
      * This is inter-module interface guarantee!
      *
-     * @param backgroundColor
-     * @param wordColor
-     * @param message
-     * @return
+     * @param backgroundColor background color for screen
+     * @param wordColor background color for word on screen
+     * @param message message content
+     * @return new RabbitMessage object
      */
     public static RabbitMessage getRabbitMessage(String backgroundColor, String wordColor, String message) {
 

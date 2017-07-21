@@ -1,10 +1,10 @@
-package org.mao.talking.rabbit.impl;
+package com.maojianwei.talking.rabbit.impl;
 
-import org.mao.talking.rabbit.api.MaoRabbitService;
-import org.mao.talking.rabbit.api.RabbitMessage;
-import org.mao.talking.rabbit.api.RabbitServer;
-import org.mao.talking.rabbit.api.RabbitUI;
-import org.mao.talking.rabbit.restful.RabbitResource;
+import com.maojianwei.talking.rabbit.api.MaoRabbitService;
+import com.maojianwei.talking.rabbit.api.RabbitMessage;
+import com.maojianwei.talking.rabbit.api.RabbitServer;
+import com.maojianwei.talking.rabbit.api.RabbitUI;
+import com.maojianwei.talking.rabbit.restful.RabbitResource;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;

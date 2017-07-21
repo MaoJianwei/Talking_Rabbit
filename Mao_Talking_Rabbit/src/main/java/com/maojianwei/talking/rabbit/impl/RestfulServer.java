@@ -1,9 +1,9 @@
-package org.mao.talking.rabbit.impl;
+package com.maojianwei.talking.rabbit.impl;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import org.mao.talking.rabbit.api.RabbitServer;
-import org.mao.talking.rabbit.restful.RabbitWebApplication;
+import com.maojianwei.talking.rabbit.api.RabbitServer;
+import com.maojianwei.talking.rabbit.restful.RabbitWebApplication;
 
 import javax.ws.rs.ProcessingException;
 import java.io.IOException;

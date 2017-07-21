@@ -1,10 +1,10 @@
-package org.mao.talking.rabbit.restful;
+package com.maojianwei.talking.rabbit.restful;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.mao.talking.rabbit.api.AbstractWebResource;
-import org.mao.talking.rabbit.api.MaoRabbitService;
-import org.mao.talking.rabbit.api.RabbitMessage;
+import com.maojianwei.talking.rabbit.api.MaoRabbitService;
+import com.maojianwei.talking.rabbit.api.RabbitMessage;
+import com.maojianwei.talking.rabbit.api.AbstractWebResource;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -19,8 +19,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-
-import static org.mao.talking.rabbit.api.RabbitMessage.COLOR_STR_STANDBY;
 
 /**
  * Hello world!
@@ -142,7 +140,7 @@ public class RabbitResource extends AbstractWebResource {
     @Produces(CONTENT_TYPE_JSON) // necessary !!!
     public Response clearEvent() {
 
-        return messageQueue.offer(RabbitMessage.getRabbitMessage(COLOR_STR_STANDBY))
+        return messageQueue.offer(RabbitMessage.getRabbitMessage(RabbitMessage.COLOR_STR_STANDBY))
                 ? ok(buildResult(RESPONSE_CODE_OK, RESPONSE_OK))
                 : ok(buildResult(RESPONSE_CODE_ERROR_UNKNOWN, RESPONSE_ERROR_UNKNOWN));
     }

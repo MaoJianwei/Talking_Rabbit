@@ -1,4 +1,4 @@
-package org.mao.talking.rabbit.api;
+package com.maojianwei.talking.rabbit.api;
 
 /**
  * Server interface. Server can be Restful, socket, RPC, etc.
@@ -9,8 +9,6 @@ public interface RabbitServer {
 
     /**
      * Singleton Pattern.
-     *
-     * @return
      */
     //RabbitServer getRabbitServer();
 

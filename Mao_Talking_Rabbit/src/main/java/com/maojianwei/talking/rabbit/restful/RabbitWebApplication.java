@@ -1,4 +1,4 @@
-package org.mao.talking.rabbit.restful;
+package com.maojianwei.talking.rabbit.restful;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -8,7 +8,7 @@ import org.glassfish.jersey.server.ResourceConfig;
  */
 public class RabbitWebApplication extends ResourceConfig {
 
-    public static final String RESOURCE_PACKAGE = "org.mao.talking.rabbit.restful";
+    public static final String RESOURCE_PACKAGE = "com.maojianwei.talking.rabbit.restful";
 
 
     public RabbitWebApplication() {

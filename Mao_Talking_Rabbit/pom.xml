@@ -2,13 +2,47 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.mao</groupId>
-    <artifactId>talking.rabbit</artifactId>
-    <version>1.0</version>
+    <groupId>com.maojianwei.talking.rabbit</groupId>
+    <artifactId>talking-rabbit-core</artifactId>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>talking.rabbit</name>
-    <url>http://maven.apache.org</url>
+    <name>talking-rabbit-core</name>
+    <description>A common tool to notify you of ANY updated events in ANY fields!</description>
+    <url>http://www.maojianwei.com/</url>
+    <licenses>
+        <license>
+            <name>Copyright © 2017 Jianwei Mao. Welcome to Star, Watch, and Fork!</name>
+            <url>http://www.maojianwei.com/</url>
+        </license>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Jianwei Mao</name>
+            <email>maojianwei2020@gmail.com</email>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:git@github.com:MaoJianwei/Talking_Rabbit.git</connection>
+        <developerConnection>scm:git:git@github.com:MaoJianwei/Talking_Rabbit.git</developerConnection>
+        <url>git@github.com:MaoJianwei/Talking_Rabbit.git</url>
+    </scm>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>mavenCentral_ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>mavenCentral_ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -84,7 +118,7 @@
                     <archive>
                         <manifest>
 
-                            <mainClass>org.mao.talking.rabbit.impl.MaoRabbitManager</mainClass>
+                            <mainClass>com.maojianwei.talking.rabbit.impl.MaoRabbitManager</mainClass>
 
                             <!-- add dependency classpath: ./dependency-jars/ should be same to maven-dependency-plugin below-->
                             <!--<addClasspath>true</addClasspath>-->
@@ -141,6 +175,49 @@
                                 ${project.build.directory}/dependency-jars/
                             </outputDirectory>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

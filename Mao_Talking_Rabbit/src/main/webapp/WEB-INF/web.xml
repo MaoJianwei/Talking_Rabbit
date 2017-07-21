@@ -45,7 +45,7 @@
         <servlet-name>Talking Rabbit Jersey Service</servlet-name>
         <init-param>
             <param-name>javax.ws.rs.core.Application</param-name>
-            <param-value>org.mao.talking.rabbit.restful.RabbitWebApplication</param-value>
+            <param-value>com.maojianwei.talking.rabbit.restful.RabbitWebApplication</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>

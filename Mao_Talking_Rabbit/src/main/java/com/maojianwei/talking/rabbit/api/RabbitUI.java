@@ -1,4 +1,4 @@
-package org.mao.talking.rabbit.api;
+package com.maojianwei.talking.rabbit.api;
 
 import java.util.Queue;
 
